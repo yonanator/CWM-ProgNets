@@ -1,5 +1,4 @@
-# CWM-ProgNets-Internal
-Welcome to Programmable Networks Devices CWM!
+# Welcome to Programmable Networks Devices CWM!
 
 This repository is organised as follows:
 
