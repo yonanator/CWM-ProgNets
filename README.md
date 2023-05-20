@@ -1,6 +1,8 @@
-# CWM-ProgNets
-Welcome to the Programmable Networks course work module!
+# CWM-ProgNets-Internal
+Welcome to Programmable Networks Devices CWM!
 
-This repository contains the exercises for the CWM. Technical material and instructions can be found on Canvas.
+This repository is organised as follows:
 
-Please fork this repository to your user.
+* assignmentX - A folder dedicated to assignment X. Not all assignments have a dedicated folder.
+
+* scripts - Useful scripts for various assignments. Refer to the notes for guidance.
