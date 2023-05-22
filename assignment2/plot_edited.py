@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # parameters to modify
-filename="ping_end1.txt"
+filename="ping_end3.txt"
 label='label'
 xlabel = 'xlabel'
 ylabel = 'ylabel'
@@ -14,11 +14,12 @@ fig_name='test.png'
 t = np.loadtxt(filename, delimiter=" ", dtype="float")
 
 # sort
-
+n = sorted(t)
 # get the probability
+p = 1. * np.arange(len(n))/(len(n)-1)
 
 
-plt.plot(np.linspace(0,1,len(t)), t, label=label)  # Plot some data on the (implicit) axes.
+plt.plot(n, p, label=label)  # Plot some data on the (implicit) axes.
 plt.xlabel(xlabel)
 plt.ylabel(ylabel)
 plt.title(title)
