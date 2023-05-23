@@ -12,8 +12,11 @@ typedef bit<48> macAddr_t;
 header ethernet_t {
 	//TODO: define the following header fields
 	//macAddr_t type destination address
+	macAddr_t dstAddr;
 	//macAddr_t type source address
-	/16 bit etherType
+	macAddr_t srcAddr;
+	//16 bit etherType
+	bit<16>  etherType;
 }
 
 struct metadata {
@@ -22,6 +25,8 @@ struct metadata {
 
 struct headers {
 	//TODO: define a header ethernet of type ethernet_t
+	ethernet_t ethernet;
+	
 }
 
 /*************************************************************************
@@ -35,7 +40,9 @@ parser MyParser(packet_in packet,
 
     state start {
 	//TODO: define a state that extracts the ethernet header
+	packet.extract(hdr.ethernet)
 	//and transitions to accept
+	transition accept;
     }
 
 }
@@ -58,12 +65,21 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
 
-    action swap_mac_addresses() {
+    action swap_mac_addresses(inout bit<48> src,
+inout bit<48> dst) {
        macAddr_t tmp_mac;
        //TODO: swap source and destination MAC addresses
        //use the defined temp variable tmp_mac
+       tmp_mac = src;
+       src = dst;
+       dst = tmp_mac;
 
        //TODO: send the packet back to the same port
+         std_meta.egress_spec = std_meta.ingress_port;
+         }
+    apply {
+       swap_mac_addresses(hdr.ethernet.srcAddr, hdr.ethernet.dstAddr);
+
     }
     
     action drop() {
@@ -73,18 +89,30 @@ control MyIngress(inout headers hdr,
     table src_mac_drop {
         key = {
 	   //TODO: define an exact match key using the source MAC address
+	   hdr.ethernet.srcAddr: exact;
         }
         actions = {
 	   //TODO: define 3 actions: swap_mac_addresses, drop, NoAction.
+	   swap_mac_addresses;
+	   drop;
+	   NoAction;
         }
         //TODO: define a table size of 1024 entries
+        size = 1024;
 
 	//TODO: define the default action to return the packet to the source
+	default_action = swap_mac_addresses();
     }
     
     apply {
     	//TODO: Check if the Ethernet header is valid
+    	if (hdr.ethernet.isvalid()) {
+    	src_mac_drop.apply();
+    	
+    	
+    	
 	//if so, lookup the source MAC in the table and decide what to do
+	
         }
     }
 }
@@ -121,6 +149,7 @@ control MyComputeChecksum(inout headers hdr, inout metadata meta) {
 control MyDeparser(packet_out packet, in headers hdr) {
     apply {
 	//TODO: emit the packet with a valid Ethernet header
+	packet.emit(hdr.ethernet);
     }
 }
 
