@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # parameters to modify
-filename="ping_end1.txt"
+filename="iperf1.txt"
 label='label'
 xlabel = 'xlabel'
 ylabel = 'ylabel'
