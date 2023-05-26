@@ -68,14 +68,28 @@ header p4calc_t {
     bit<8>  p;
     bit<8>  four;
     bit<8>  ver;
-    bit<32> operand_a;
+    bit<32> operand_0;
+    bit<32> operand_1;
+    bit<32> operand_2;
+    bit<32> operand_3;
+    bit<32> operand_4;
+    bit<32> operand_5;
+    bit<32> operand_6;
+    bit<32> operand_7;
+    bit<32> operand_8;
     bit<32> res;
-    bit<32> location;
     
-
+/* TODO
+ * fill p4calc_t header with P, four, ver, op, operand_a, operand_b, and res
+   entries based on above protocol header definition.
+ */
 }
 
-
+/*
+ * All headers, used in the program needs to be assembled into a single struct.
+ * We only need to declare the type, but there is no need to instantiate it,
+ * because it is done "by the architecture", i.e. outside of P4 functions
+ */
 struct headers {
     ethernet_t   ethernet;
     p4calc_t     p4calc;
@@ -139,10 +153,6 @@ control MyVerifyChecksum(inout headers hdr,
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
-                  
-register<bit<1>>(9) r;
-
-                  
     action send_back(bit<32> result) {
          hdr.p4calc.res = result;
          bit<48> temp;
@@ -150,44 +160,191 @@ register<bit<1>>(9) r;
          hdr.ethernet.dstAddr = hdr.ethernet.srcAddr;
          hdr.ethernet.srcAddr = temp;
          standard_metadata.egress_spec = standard_metadata.ingress_port;
-        
-      
+        /* TODO
+         * - put the result back in hdr.p4calc.res
+         * - swap MAC addresses in hdr.ethernet.dstAddr and
+         *   hdr.ethernet.srcAddr using a temp variable
+         * - Send the packet back to the port it came from
+             by saving standard_metadata.ingress_port into
+             standard_metadata.egress_spec
+         */
     }
-
-
-
-
-
+    action switch_move() {
+    if (hdr.p4calc.operand_4 == 0) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_1 == 2 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_1 == 2 && hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_1 == 0 ) {
+    send_back(1);
+    } else if (hdr.p4calc.operand_3 == 2 && hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_5 == 0 ) {
+    send_back(5);
+    } else if (hdr.p4calc.operand_3 == 2 && hdr.p4calc.operand_5 == 2 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_5 == 2 && hdr.p4calc.operand_3 == 0 ) {
+    send_back(3);
+    } else if (hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_7 == 2 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_7 == 0 ) {
+    send_back(7);
+    } else if (hdr.p4calc.operand_7 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_3 == 2 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_3 == 0 ) {
+    send_back(3);
+    } else if (hdr.p4calc.operand_3 == 2 && hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_1 == 2 && hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_7 == 0 ) {
+    send_back(7);
+    } else if (hdr.p4calc.operand_1 == 2 && hdr.p4calc.operand_7 == 2 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_7 == 2 && hdr.p4calc.operand_1 == 0 ) {
+    send_back(1);
+    } else if (hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_5 == 2 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_5 == 0 ) {
+    send_back(5);
+    } else if (hdr.p4calc.operand_5 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_0 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_8 == 2 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_2 == 2 && hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 2 && hdr.p4calc.operand_6 == 2 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_1 == 1 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_1 == 1 && hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_1 == 0 ) {
+    send_back(1);
+    } else if (hdr.p4calc.operand_3 == 1 && hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_5 == 0 ) {
+    send_back(5);
+    } else if (hdr.p4calc.operand_3 == 1 && hdr.p4calc.operand_5 == 1 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_5 == 1 && hdr.p4calc.operand_3 == 0 ) {
+    send_back(3);
+    } else if (hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_7 == 1 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_7 == 0 ) {
+    send_back(7);
+    } else if (hdr.p4calc.operand_7 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_3 == 1 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_3 == 0 ) {
+    send_back(3);
+    } else if (hdr.p4calc.operand_3 == 1 && hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_1 == 1 && hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_7 == 0 ) {
+    send_back(7);
+    } else if (hdr.p4calc.operand_1 == 1 && hdr.p4calc.operand_7 == 1 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_7 == 1 && hdr.p4calc.operand_1 == 0 ) {
+    send_back(1);
+    } else if (hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_5 == 1 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_5 == 0 ) {
+    send_back(5);
+    } else if (hdr.p4calc.operand_5 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_8 == 0 ) {
+    send_back(8);
+    } else if (hdr.p4calc.operand_0 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_8 == 1 && hdr.p4calc.operand_0 == 0 ) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_6 == 0 ) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_2 == 1 && hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_4 == 0 ) {
+    send_back(4);
+    } else if (hdr.p4calc.operand_4 == 1 && hdr.p4calc.operand_6 == 1 && hdr.p4calc.operand_2 == 0 ) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_1 == 0) {
+    send_back(1);
+    } else if (hdr.p4calc.operand_2 == 0) {
+    send_back(2);
+    } else if (hdr.p4calc.operand_3 == 0) {
+    send_back(3);
+    } else if (hdr.p4calc.operand_0 == 0) {
+    send_back(0);
+    } else if (hdr.p4calc.operand_5 == 0) {
+    send_back(5);
+    } else if (hdr.p4calc.operand_6 == 0) {
+    send_back(6);
+    } else if (hdr.p4calc.operand_7 == 0) {
+    send_back(7);
+    } else if (hdr.p4calc.operand_8 == 0) {
+    send_back(8);
+    } else {
+    send_back(10);
+    }
+    }
+    
+  
+/* 
     action operation_add() {
-       bit<8> b;
-       b = hdr.p4calc.operand_a + 1;
-       r.write(b, 1)
-        send_back(b);
-               
+        /* TODO call send_back with operand_a + operand_b 
+        send_back(hdr.p4calc.operand_a + hdr.p4calc.operand_b);
     }
 
-   action operation_one() {
-       bit<8> a;
-       a = 1;
-       r.write(a, 1)
-        send_back(a);
+    action operation_sub() {
+        /* TODO call send_back with operand_a - operand_b 
+        send_back(hdr.p4calc.operand_a - hdr.p4calc.operand_b);
+    }
 
+    action operation_and() {
+        /* TODO call send_back with operand_a & operand_b 
+        send_back(hdr.p4calc.operand_a & hdr.p4calc.operand_b);
+    }
+
+    action operation_or() {
+        /* TODO call send_back with operand_a | operand_b 
+        send_back(hdr.p4calc.operand_a | hdr.p4calc.operand_b);
+    }
+
+    action operation_xor() {
+        /* TODO call send_back with operand_a ^ operand_b 
+        send_back(hdr.p4calc.operand_a ^ hdr.p4calc.operand_b);
+    }
+*/
     action operation_drop() {
         mark_to_drop(standard_metadata);
     }
 
-   
-
+  /*  table calculate {
+        key = {
+            hdr.p4calc.op        : exact;
+        }
+        actions = {
+            operation_add;
+            operation_sub;
+            operation_and;
+            operation_or;
+            operation_xor;
+            operation_drop;
+        }
+        const default_action = operation_drop();
+        const entries = {
+            P4CALC_PLUS : operation_add();
+            P4CALC_MINUS: operation_sub();
+            P4CALC_AND  : operation_and();
+            P4CALC_OR   : operation_or();
+            P4CALC_CARET: operation_xor();
+        }
+    }
+*/
     apply {
-     bit<1> last;
-    r.read (last, hdr.p4calc.operand_a);
-        if (last == 0){
-          r.write(hdr.p4calc.operand_a,1);
-            if (hdr.p4calc.operand_a < 9){
-            operation_add();
-            }else if (hdr.p4calc.operand_a == 9){
-            }operation_one();
-
+        if (hdr.p4calc.isValid()) {
+            switch_move();
         } else {
             operation_drop();
         }
